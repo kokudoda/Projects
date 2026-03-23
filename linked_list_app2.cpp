@@ -1,5 +1,6 @@
 #include <iostream>
-using namespace std;
+using std::cout;
+using std::cin;
 
 //クラスで実装
 
@@ -54,7 +55,7 @@ void Linked_List::add_rear(int data)
 void Linked_List::delete_front()
 {
     if(head == nullptr){
-        cout << "EMPTY" << endl;
+        cout << "EMPTY" << "\n";
         return ;
     }
     Node* temp = head;
@@ -62,7 +63,7 @@ void Linked_List::delete_front()
     if(head == nullptr){ //headがnullptrを指したらtailもnullptrを指すようにする
         tail = nullptr;
     }
-    cout << "delete : " << temp->data << endl; 
+    cout << "delete : " << temp->data << "\n"; 
     delete temp;
 }
 
@@ -74,7 +75,7 @@ void Linked_List::show()
         cout << temp->data << " -> ";
         temp = temp->next;
     }
-    cout << "nullptr" << endl;
+    cout << "nullptr" << "\n";
 }
 
 void Linked_List::search(int key)
@@ -82,22 +83,22 @@ void Linked_List::search(int key)
     Node* temp = head;
 
     if(temp == nullptr){
-        cout << "EMPTY" << endl;
+        cout << "EMPTY" << "\n";
         return ;
     }
     while(temp){
         if(temp->data == key){
-            cout << "[" << key << "] found" << endl;
+            cout << "[" << key << "] found" << "\n";
             return ;
         }
         temp = temp->next;
     }
-    cout << "Not found" << endl;
+    cout << "Not found" << "\n";
 }
 
 void Linked_List::free_node()
 {
-    struct Node* current = head;
+    Node* current = head;
     while(current){
         Node* temp = current->next;
         delete current;
@@ -113,12 +114,12 @@ int main()
     int choice;
 
     while(1){
-        cout << "1 : add in front" << endl;   //add_front()
-        cout << "2 : add in rear" << endl;   //add_rear()
-        cout << "3 : delete front" << endl;   //delete_front()
-        cout << "4 : show" << endl;     //show()
-        cout << "5 : search" << endl;     //search()
-        cout << "6 : end" << endl;     //end
+        cout << "1 : add in front" << "\n";   //add_front()
+        cout << "2 : add in rear" << "\n";   //add_rear()
+        cout << "3 : delete front" << "\n";   //delete_front()
+        cout << "4 : show" << "\n";     //show()
+        cout << "5 : search" << "\n";     //search()
+        cout << "6 : end" << "\n";     //end
 
         cout << " >> ";
         cin >> choice;
@@ -129,42 +130,42 @@ int main()
                 cout << "Please enter the number you would like to add >> ";
                 cin >> data;
                 list.add_front(data);
-                cout << endl;
+                cout << "\n";
                 break;
 
             case 2:
                 cout << "Please enter the number you would like to add >> ";
                 cin >> data;
                 list.add_rear(data);
-                cout << endl;
+                cout << "\n";
                 break;
 
             case 3:
-                cout << "delete front" << endl;
+                cout << "delete front" << "\n";
                 list.delete_front();
-                cout << endl;
+                cout << "\n";
                 break;
             
             case 4:
-                cout << "show" << endl;
+                cout << "show" << "\n";
                 list.show();
-                cout << endl;
+                cout << "\n";
                 break;
 
             case 5:
                 cout << "Please enter the number you want to search for >> ";
                 cin >> key;
                 list.search(key);
-                cout << endl;
+                cout << "\n";
                 break;
                 
             case 6:
-                cout << "end" << endl;
+                cout << "end" << "\n";
                 return 0;
 
             default:
-                cout << "invalid number" << endl;
-                cout << endl;
+                cout << "invalid number" << "\n";
+                cout << "\n";
                 break;
         }        
     }
