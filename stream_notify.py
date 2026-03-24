@@ -1,9 +1,13 @@
 import requests
 import time
 from plyer import notification   #通知を出すため
+from dotenv import load_dotenv
+import os
 
-CLIENT_ID = "自分のTWITCH ID"       
-CLIENT_SECRET = "自分のTWITCH シークレット"    
+load_dotenv()  # .envファイルを読み込みむ
+
+CLIENT_ID = os.getenv("CLIENT_ID")                  #.envから取得
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")          #.envから取得
 target_channel = "kato_junichi0817"                 #目的のチャンネル
 CHECK_INTARVAL = 60                                 #60秒ごとにチェック
 
