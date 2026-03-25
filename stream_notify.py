@@ -46,7 +46,7 @@ def is_live(access_token):
     #認証済みである情報
     headers = {
         "Client-id" : CLIENT_ID,
-        "Authorization" : f"Bearer {access_token}"
+        "Authorization" : f"Bearer {access_token}"   #Beare認証
     }
 
     #誰の配信状況をしらべたいか
@@ -64,9 +64,13 @@ def is_live(access_token):
     data = response.json()
 
     #配信していたらTrueを返す
-    return len(data["data"]) > 0
+    if len(data["data"]) > 0:
+        title = data["data"][0]["title"]
+        return True,title  #配信中である(True)とタイトルを返す
+    else:
+        return False,""     #配信なし(False)と空文字を返す
     """
-    配信していないときは↓が空("data":[],)となるので >0としている
+    配信していないときは↓が空("data":[],)となる.
     {
   "data": [
     {
@@ -86,8 +90,8 @@ def is_live(access_token):
 #通知を出す関数
 def send_notifiation(title,message):
     notification.notify(
-        title = title,
         message = message,
+        title = title,
         timeout = 10
     )
 
@@ -105,13 +109,13 @@ def main():
 
     while True:
         try:
-            live = is_live(access_token)
+            live,title= is_live(access_token)
 
             if live and not was_live:
                 print("配信を開始しました")
                 send_notifiation(
-                    title = "うんこちゃんが配信を開始しました",
-                    message = "Twitchを開こう"
+                    message = "うんこちゃんが配信を開始しました",
+                    title = f"{title}"
                 )
                 was_live = True
             
