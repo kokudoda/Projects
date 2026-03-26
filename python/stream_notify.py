@@ -1,3 +1,5 @@
+# APIを利用して配信者が配信を開始すると通知を出すコード
+
 import requests
 import time
 from plyer import notification   #通知を出すため
