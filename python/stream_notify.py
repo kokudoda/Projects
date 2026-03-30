@@ -91,6 +91,25 @@ def send_notification(stream_title,game_name):
         timeout = 10
     )
 
+#通知したかどうか判断する関数
+def check_notify(live,stream_title,game_name,start_stream,was_live):
+    
+    #配信していて、未通知のとき
+    if live and not was_live:
+        print(f"配信開始 : {start_stream}")
+        send_notification(
+            stream_title,
+            game_name
+        )
+        return True     #通知したのでTrueにする
+    
+    #配信していないとき
+    if not live:
+        print("配信はしていません")
+        return False
+    
+    return was_live
+
 def main():
 
     print("うんこちゃん通知アプリです\n")
@@ -103,28 +122,18 @@ def main():
     was_live = False    #通知したかどうかのフラグ(通知済み:True , 未通知:False)
 
     while True:
-        try:
+        try:    #例外の発生を調べる
             live,stream_title,game_name,start_stream = is_live(access_token)
 
-            if live and not was_live:   #liveがTrueかつ未通知のとき
-                print(f"配信開始 : {start_stream}")
-                send_notification(
-                    stream_title,
-                    game_name
-                )
-                was_live = True     #通知したのでTrueにする
-
-            if not live:
-                print("配信していません")
-                live = False
+            was_live = check_notify(live,stream_title,game_name,start_stream,was_live)
 
             time.sleep(CHECK_INTARVAL)
 
-        except KeyboardInterrupt:   
+        except KeyboardInterrupt:      #Ctrl + Cが押されたときの例外処理
             print("\n終了します")
             break
 
-        except Exception as e:
+        except Exception as e:  #エラーが発生したとき
             print(f"エラーが発生しました : {e}")
             print("60秒後に再開します")
             time.sleep(60)
