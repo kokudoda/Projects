@@ -1,0 +1,20 @@
+# Twitch配信通知アプリ
+stream_notify.py
+
+## 概要
+指定した配信者が配信を開始したとき
+デスクトップ通知を送るアプリですわ
+
+## 使用技術
+- Python
+- Twitch API
+- python-dotenv（環境変数管理）
+- plyer（デスクトップ通知）
+
+## 機能
+- 60秒ごとに配信状況をチェック
+- 配信開始時にデスクトップ通知
+
+## 実行方法
+pip install requests plyer python-dotenv
+python main.py
