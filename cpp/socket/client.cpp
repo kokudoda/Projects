@@ -10,7 +10,7 @@ using std::endl;
 int main()
 {
     Client client1;
-    client1.connection("127.0.0.1",8080);
+    client1.connection("127.0.0.1",8080); //ipアドレスは127.0.0.1(ローカルループバックアドレス),ポート番号8080
 
     while(1){
         cout << " >>> ";

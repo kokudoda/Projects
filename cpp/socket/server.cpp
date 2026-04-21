@@ -10,7 +10,7 @@ using std::endl;
 int main()
 {
     Server server;
-    server.server_bind(8080);
+    server.server_bind(8080); //ポート番号は8080を指定
     server.server_listen();
     server.server_accept();
 
@@ -19,7 +19,7 @@ int main()
 
         cout << " >>> ";
         string str;
-        if(!(cin >> str)) break;
+        if(!(cin >> str)) break; //Ctrl+Dが押されるまで
 
         server.send_msg(str);
     }

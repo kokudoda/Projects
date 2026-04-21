@@ -12,6 +12,16 @@ using std::endl;
 
 #define BUFFER_SIZE 1024
 
+/*  clientの流れ
+    socket() コンストラクタに記述
+        ↓
+    connect()
+        ↓
+    read()/write()
+        ↓
+    close()　デストラクタに記述
+*/
+
 class Client{
     private:
         int fd; //ファイルディスクリプタ
@@ -42,6 +52,14 @@ Client::~Client()
 //接続する相手を指定し、ストリームをつなぐ関数
 void Client::connection(const char* ip,int port)
 {
+    /*
+        struct sockaddr_in
+        ├── sin_family   → IPv4(PF_INET)かIPv6(PF_INET6)か
+        ├── sin_port     → ポート番号
+        └── sin_addr     → IPアドレス
+
+        struct sockaddr_in addr; 
+    */
     struct sockaddr_in server_addr;
 
     memset(&server_addr,0,sizeof(server_addr));

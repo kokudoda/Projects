@@ -44,9 +44,17 @@ Server::~Server()
     close(client_fd);
 }
 
-//ディスクリプタをクライアントからの接続要求を受信するポート番号に結び付ける処理
+//ディスクリプタをクライアントからの接続要求を受信するポート番号(今回は8080)に結び付ける処理
 void Server::server_bind(int port)
 {
+    /*
+     struct sockaddr_in
+        ├── sin_family   → IPv4(PF_INET)かIPv6(PF_INET6)か
+        ├── sin_port     → ポート番号
+        └── sin_addr     → IPアドレス
+
+        struct sockaddr_in addr; 
+    */
     struct sockaddr_in addr;
 
     memset(&addr, 0, sizeof(addr));
@@ -72,7 +80,7 @@ void Server::server_listen()
 void Server::server_accept()
 {
     struct sockaddr_in addr;
-    socklen_t addrlen = sizeof(addr);
+    socklen_t addrlen = sizeof(addr); //accept()で使用される、アドレスの長さを格納する型。
     client_fd = accept(server_fd,(struct sockaddr* )&addr,&addrlen);
     if(client_fd < 0){
         perror("accept");
@@ -80,11 +88,13 @@ void Server::server_accept()
     }
 }
 
+//送信する関数
 void Server::send_msg(string s)
 {   
     write(client_fd,s.c_str(),s.size());
 }
 
+//受け取る関数
 void Server::receive()
 {
     char buffer[BUFFER_SIZE];
