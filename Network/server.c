@@ -7,37 +7,37 @@
 #include <stdio.h>
 
 /*  
-    �T�[�o�[���̎菇
-    �Esocket()
-    �Ebind()  �ŏ���������
-        ��
-    �Elisten()�@�Őڑ��󗝏���(�N���C�A���g����̐ڑ���҂��)
-        ��
-    �Eaccept() �ڑ��v����(�N���C�A���g����̐ڑ��v������)
-        ��
-    �Eread()/write()  �œǂݍ���/��������
-        ��
-    �Eclose() �I��
+    サーバー側の手順
+    ・socket()
+    ・bind()  で初期化処理
+        ↓
+    ・listen()　で接続受理準備(クライアントからの接続を待つ状態)
+        ↓
+    ・accept() 接続要求受理(クライアントからの接続要求を受理)
+        ↓
+    ・read()/write()  で読み込み/書き込み
+        ↓
+    ・close() 終了
 */ 
 
-/* bind(int sockfd,struct sockaddr *my_addr,socklen_t addrlen) �f�B�X�N���v�^���N���C�A���g����̐ڑ��v������M����|�[�g�ԍ��Ɍ��ѕt���鏈��
-                                                            �\�P�b�g�ɖ��O��t����B�Ԃ�l�͐���I����0�A�ُ�I����-1
-    sockfd �ɂ̓t�@�C���f�B�X�N���v�^(�\�P�b�g)���w��
-    my_addr �ɂ͐ڑ��v������M����A�h���X�A�|�[�g���w��
-    addrlen�@�ɂ͑������œn�����\���̂̃T�C�Y
+/* bind(int sockfd,struct sockaddr *my_addr,socklen_t addrlen) ディスクリプタをクライアントからの接続要求を受信するポート番号に結び付ける処理
+                                                            ソケットに名前を付ける。返り値は正常終了で0、異常終了で-1
+    sockfd にはファイルディスクリプタ(ソケット)を指定
+    my_addr には接続要求を受信するアドレス、ポートを指定
+    addrlen　には第二引数で渡した構造体のサイズ
 */
 
-/* listen(int sock,int backlog) �t�@�C���f�B�X�N���v�^���N���C�A���g����̐ڑ��v����M�҂���ԂɈڍs�����鏈��
-                                �Ԃ�l�͐���I����0�A�ُ�I����-1
-    sock�@�ɂ̓t�@�C���f�B�X�N���v�^
-    backlog�@�ɂ͓����Ɏ󂯕t����R�l�N�V�����̍ő吔�B�Ƃ肠����5�ɂ���
+/* listen(int sock,int backlog) ファイルディスクリプタをクライアントからの接続要求受信待ち状態に移行させる処理
+                                返り値は正常終了で0、異常終了で-1
+    sock　にはファイルディスクリプタ
+    backlog　には同時に受け付けるコネクションの最大数。とりあえず5にする
 */
 
-/* accept(int sock,struct sockaddr *addr,socklen_t *addrlen) �N���C�A���g����̐ڑ��v�����󗝂��A�N���C�A���g�Ƃ̃f�[�^�̑���M���s���f�B�X�N���v�^��
-                                                            �V���ɐ�������B�Ԃ�l�͐���I���Ńt�@�C���f�B�X�N���v�^�A�ُ�I����-1
-    sock�@�ɂ͐ڑ��v�����󂯂��t�@�C���f�B�X�N���v�^
+/* accept(int sock,struct sockaddr *addr,socklen_t *addrlen) クライアントからの接続要求を受理し、クライアントとのデータの送受信を行うディスクリプタを
+                                                            新たに生成する。返り値は正常終了でファイルディスクリプタ、異常終了で-1
+    sock　には接続要求を受けたファイルディスクリプタ
     addr
-    addr_len �ɂ�*addr�̃T�C�Y                                            
+    addr_len には*addrのサイズ                                            
 */
 
 #define PORT 8080
@@ -48,26 +48,26 @@ int main()
     struct sockaddr_in addr;
     char buffer[BUFFER_SIZE];
 
-    //�\�P�b�g�쐬
+    //ソケット作成
     int server_fd = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
     if(server_fd < 0){
         perror("socket");
         exit(1);
     }
 
-    //�A�h���X�ݒ�
+    //アドレス設定
     memset(&addr,0,sizeof(addr));
     addr.sin_family = PF_INET; //IPv4
-    addr.sin_addr.s_addr = INADDR_ANY; //���ׂẴl�b�g���[�N�C���^�[�t�F�[�X�Őڑ����󂯂�
-    addr.sin_port = htons(PORT); //�l�b�g���[�N�o�C�g�I�[�_�[�ɕϊ�����
+    addr.sin_addr.s_addr = INADDR_ANY; //すべてのネットワークインターフェースで接続を受ける
+    addr.sin_port = htons(PORT); //ネットワークバイトオーダーに変換する
 
-    //�o�C���h
+    //バインド
     if(bind(server_fd,(struct sockaddr *)&addr,sizeof(addr)) < 0){
         perror("bind");
         exit(1);
     }
 
-    //�ڑ��v����M�҂���ԂɈڍs
+    //接続要求受信待ち状態に移行
     if(listen(server_fd,5) < 0){
         perror("listen");
         exit(1);
@@ -75,7 +75,7 @@ int main()
 
     printf("Server listening on port %d...\n",PORT);
 
-    //�ڑ���t
+    //接続受付
     socklen_t addrlen = sizeof(addr);
     int client_fd = accept(server_fd,(struct sockaddr *)&addr,&addrlen);
     if(client_fd < 0){
@@ -83,7 +83,7 @@ int main()
         exit(1);
     }
 
-    //��M
+    //受信
     int n = read(client_fd,buffer,BUFFER_SIZE-1);
     if(n < 0){
         perror("read");
@@ -92,7 +92,7 @@ int main()
     buffer[n] = '\0';
     printf("Received: %s\n",buffer);
 
-    //���M
+    //送信
     write(client_fd,"Hello from server",17);
 
     close(client_fd);

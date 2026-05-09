@@ -8,28 +8,37 @@
 
 
 /*
-�N���C�A���g���̎菇
+クライアント側の手順
     socet()
-    connect() �ŏ���������
-        ��
-    read()/write()�@�œǂݍ���/��������
-        ��
-    close() �ŏI������
+    connect() で初期化処理
+        ↓
+    read()/write()　で読み込み/書き込み
+        ↓
+    close() で終了処理
 */
 
-/*socket(int domain,int type,int protocol) �̓\�P�b�g�����V�X�e���R�[���B�t�@�C���f�B�X�N���v�^��Ԃ�(�G���[�Ȃ�-1��Ԃ�)
-  domain �ɂ̓v���g�R���t�@�~��(IPv4�Ȃ�PF_INET)
-  type�@�ɂ͒ʐM���@(TCP�Ȃ�SOCK_STREAM�BUDP�Ȃ�SOCK_DGRAM)
-  protocol�@�ɂ͒ʐM�ɗ��p����v���g�R��(TCP�Ȃ�IPPROTO_TCP�AUDP�Ȃ�IPPROTO_UDP)�BPF_INET,SOCK_STREAM���w�肵���ꍇ��0�Ǝw�肵�Ă��悢
-  ��@sockfd = socket(PF_INET,SOCK_STREA,IPPROTO_TCP);
+/*socket(int domain,int type,int protocol) はソケットを作るシステムコール。ファイルディスクリプタを返す(エラーなら-1を返す)
+  domain にはプロトコルファミリ(IPv4ならPF_INET)
+  type　には通信方法(TCPならSOCK_STREAM。UDPならSOCK_DGRAM)
+  protocol　には通信に利用するプロトコル(TCPならIPPROTO_TCP、UDPならIPPROTO_UDP)。PF_INET,SOCK_STREAMを指定した場合は0と指定してもよい
+  例　sockfd = socket(PF_INET,SOCK_STREA,IPPROTO_TCP);
 */
 
-/*connect(int sockfd,const struct sockaddr *serv_addr,socklen_t addrlen)�ڑ����鑊����w�肵�A�X�g���[�����Ȃ��BIP�A�h���X�ƃ|�[�g�ԍ��������B
-                                (UDP�ŒʐM���s���ꍇ��connect()���g�p���Ȃ��Ă��悢)�B�Ԃ�l�͐���������0�A���s������-1
-    sockfd �ɂ̓t�@�C���f�B�X�N���v�^���w�肷��Bsocket()�ŋA���Ă����l
+/*
+struct sockaddr_in
+├── sin_family   → IPv4かIPv6か
+├── sin_port     → ポート番号
+└── sin_addr     → IPアドレス
+
+struct sockaddr_in addr; 
+*/
+
+/*connect(int sockfd,const struct sockaddr *serv_addr,socklen_t addrlen)接続する相手を指定し、ストリームをつなぐ。IPアドレスとポート番号を扱う。
+                                (UDPで通信を行う場合はconnect()を使用しなくてもよい)。返り値は成功したら0、失敗したら-1
+    sockfd にはファイルディスクリプタを指定する。socket()で帰ってきた値
     serv_addr
-    addrlen �ɂ͑������œn�����\���̂̃T�C�Y���w�肷��
-    �� 
+    addrlen には第二引数で渡した構造体のサイズを指定する
+    例 
 */
 
 #define PORT 8080
@@ -40,29 +49,29 @@ int main()
     struct sockaddr_in server_addr;
     char buffer[BUFFER_SIZE];
 
-    //�\�P�b�g�쐬
+    //ソケット作成
     int fd = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
     if(fd < 0){
         perror("socket");
         exit(1);
     }
 
-    //�T�[�o�[���ݒ�
+    //サーバー情報設定
     memset(&server_addr,0,sizeof(server_addr));
     server_addr.sin_family = PF_INET;
     server_addr.sin_port = htons(PORT);
     inet_pton(PF_INET,"127.0.0.1",&server_addr.sin_addr);
 
-    //�ڑ�
+    //接続
     if(connect(fd,(struct sockaddr *)&server_addr,sizeof(server_addr)) < 0){
         perror("connect");
         exit(1);
     }
 
-    //���M
+    //送信
     write(fd,"Hello from client",17);
 
-    //��M
+    //受信
     int n = read(fd,buffer,BUFFER_SIZE-1);
     if(n < 0){
         perror("read");
