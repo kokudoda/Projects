@@ -31,19 +31,19 @@ Projects/
 # cpp
  C++で書いたコード
 
-## list
+### list
  連結リストを実装
 
-## socket
+### socket
  C++でソケット通信を実装。
 
-#python
+# python
  pythonでWebAPIを利用したコードなどを置いています
 
-## image_size_checker.py
+### image_size_checker.py
  フォルダにある画像ファイルの合計の大きさを出力するコード
 
-## stream_notify.py
+### stream_notify.py
  配信サイトTwitchのAPIを利用し、指定した配信者が配信を開始すると通知がでるコード
 
 ## weather.py
